@@ -1,18 +1,18 @@
-# Pull Python
-FROM python:latest
+# Pull Debian
+FROM debian:buster-slim
 
 # Labels
 LABEL Maintainer="CraftingGamerTom"
 
-RUN apt update
-RUN apt install ffmpeg -y
+# Install Dependencies
+RUN apt-get update
+RUN apt-get -y upgrade
+RUN apt-get -y install ffmpeg
 
+# Set Up Directory
 WORKDIR /usr/app/src
 COPY .env ./
-COPY main.py ./
 COPY capture.sh ./
 
-#CMD instruction should be used to run the software
-#contained by your image, along with any arguments.
-
-CMD [ "python", "./main.py"]
+# Run Program
+CMD sh ./capture.sh ${RTMP_LINK} ${RTMP_KEY} ${CAMERA_LOCATION}
