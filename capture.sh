@@ -7,30 +7,34 @@ SOURCE="$3"             # UDP Source (see SAP ads)
 
 # Function to handle sleeping
 sleep_during_stream() {
-	eval "$(date +'today=%F now=%s')"
-	quarterday=$((21600))
-	midnight=$(date -d "$today 0" +%s)
-	difference=$((now - midnight))
+	declare -i quarterday=21600
+    timenow=$(date +'%s')
+	time_since_midnight=$[( ($timenow - 18000) % 86400 )]
+	difference=$[($timenow - $time_since_midnight)]
 	SLEEPTIME=$0
 
-	echo "$((now - midnight))"
+    echo "Time now: $(date +'%F %r')"
+	echo "Calculated timenow: $((timenow))"
+	echo "Quarter day: $((quarterday))"
+	echo "Calculated Time Since Midnight: $((time_since_midnight))"
+	echo "Calculated Difference: $((difference))"
 
-	if [ "$difference" -lt $((0)) ]; then
+	if [ $time_since_midnight -lt $((0)) ]; then
 		echo ERROR: difference is less than zero!
-	elif [ "$difference" -lt "$quarterday" ]; then 
+	elif [ $time_since_midnight -lt $quarterday ]; then 
 		echo before 6am
-		SLEEPTIME=$((quarterday - difference))
-	elif [ "$difference" -lt $(("$quarterday"*2)) ]; then
+		SLEEPTIME=$((quarterday - time_since_midnight))
+	elif [ $time_since_midnight -lt $(($quarterday*2)) ]; then
 		echo between 6am and 12pm
-		SLEEPTIME=$((quarterday*2 - difference))
-	elif [ "$difference" -lt $(("$quarterday"*3)) ]; then
+		SLEEPTIME=$((quarterday*2 - time_since_midnight))
+	elif [ $time_since_midnight -lt $(($quarterday*3)) ]; then
 		echo between 12pm and 6pm
-		SLEEPTIME=$((quarterday*3 - difference))
-	elif [ "$difference" -lt $(("$quarterday"*4)) ]; then
+		SLEEPTIME=$((quarterday*3 - time_since_midnight))
+	elif [ $time_since_midnight -lt $(($quarterday*4)) ]; then
 		echo between 6pm and midnight
-		SLEEPTIME=$((quarterday*4 - difference))
+		SLEEPTIME=$((quarterday*4 - time_since_midnight))
 	else 
-		echo ERROR: difference is greater than a day!
+		echo ERROR: time_since_midnight is greater than a day!
 	fi
 
 	echo stream for "$((SLEEPTIME))" seconds
