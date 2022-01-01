@@ -7,11 +7,11 @@ SOURCE="$3"             # UDP Source (see SAP ads)
 
 # Function to handle sleeping
 sleep_during_stream() {
-	declare -i quarterday=21600
+    declare -i quarterday=21600
     timenow=$(date +'%s')
-	time_since_midnight=$[( ($timenow - 18000) % 86400 )]
-	difference=$[($timenow - $time_since_midnight)]
-	SLEEPTIME=$0
+    time_since_midnight=$(( ($timenow - 18000) % 86400 ))
+    difference=$(($timenow - $time_since_midnight))
+    SLEEPTIME=$0
 
     echo "Time now: $(date +'%F %r')"
 	echo "Calculated timenow: $((timenow))"

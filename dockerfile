@@ -14,5 +14,8 @@ WORKDIR /usr/app/src
 COPY .env ./
 COPY capture.sh ./
 
+# Mark File as executable
+RUN ["chmod", "+x", "./capture.sh"]
+
 # Run Program
-CMD sh ./capture.sh ${RTMP_LINK} ${RTMP_KEY} ${CAMERA_LOCATION}
+CMD ./capture.sh ${RTMP_LINK} ${RTMP_KEY} ${CAMERA_LOCATION}
