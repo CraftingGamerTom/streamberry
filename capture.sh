@@ -38,7 +38,21 @@ sleep_during_stream() {
 	fi
 
 	echo stream for "$((SLEEPTIME))" seconds
-	sleep "$((SLEEPTIME))"
+
+	NUMBER_OF_LOOPS=$((SLEEPTIME/60))
+
+	for(( index=0; index<NUMBER_OF_LOOPS; index++ ))
+	do
+		if ps -p $((pid)) > /dev/null
+		then
+			echo [debug] sleeping 60 seconds
+			sleep 60       	   # While good and, no disaster-condition.
+		fi
+		echo stream has stopped. beginning shutdown.
+		break				   # Abandon the loop.
+	done
+
+	#sleep "$((SLEEPTIME))"
 	#sleep 60 #debug
 }
 
