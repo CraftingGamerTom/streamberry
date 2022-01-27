@@ -47,6 +47,7 @@ sleep_during_stream() {
 		then
 			echo [debug] sleeping 60 seconds
 			sleep 60       	   # While good and, no disaster-condition.
+			continue
 		fi
 		echo stream has stopped. beginning shutdown.
 		break				   # Abandon the loop.

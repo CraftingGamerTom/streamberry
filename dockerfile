@@ -8,6 +8,7 @@ LABEL Maintainer="CraftingGamerTom"
 RUN apt-get update
 RUN apt-get -y upgrade
 RUN apt-get -y install ffmpeg
+RUN apt-get -y install procps
 
 # Set Up Directory
 WORKDIR /usr/app/src
