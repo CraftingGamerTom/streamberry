@@ -13,10 +13,12 @@ RUN apt-get -y install procps
 # Set Up Directory
 WORKDIR /usr/app/src
 COPY .env ./
-COPY capture.sh ./
+COPY runner.sh ./
+COPY stream.sh ./
 
 # Mark File as executable
-RUN ["chmod", "+x", "./capture.sh"]
+RUN ["chmod", "+x", "./runner.sh"]
+RUN ["chmod", "+x", "./stream.sh"]
 
 # Run Program
-CMD ./capture.sh ${RTMP_LINK} ${RTMP_KEY} ${CAMERA_LOCATION}
+CMD ./runner.sh ${RTMP_LINK} ${RTMP_KEY} ${CAMERA_LOCATION}

@@ -45,9 +45,32 @@ sleep_during_stream() {
 	do
 		if ps -p $((pid)) > /dev/null
 		then
-			echo [debug] sleeping 60 seconds
-			sleep 60       	   # While good and, no disaster-condition.
-			continue
+
+			thisSleepCycleTime=60
+
+			# Check if ffmpeg is stuck sleeping
+			keepRunning="no"
+			for(( indexTwo=0; indexTwo<55; indexTwo++ ))
+			do
+				status=$(grep -h 'State' /proc/$((pid))/status)
+				echo "[debug] $status"
+				if echo "$status" | grep -h 'running' > /dev/null
+				then
+					keepRunning="yes" 
+					break
+				fi
+				
+				sleep 1 # sleep to try again
+				thisSleepCycleTime=$((thisSleepCycleTime))-1
+			done
+
+			# If can keepRunning then sleep
+			if [ "$keepRunning" = "yes" ]
+			then
+				echo [debug] sleeping "$((thisSleepCycleTime))" seconds
+				sleep $((thisSleepCycleTime))     	# While good and, no disaster-condition.
+				continue
+			fi
 		fi
 		echo stream has stopped. beginning shutdown.
 		break				   # Abandon the loop.
@@ -76,19 +99,23 @@ fi
 
 echo =====
 echo Starting Live Stream
-echo Time: "$((now))"
+echo Time: "$(date +'%F %r')"
 echo =====
-echo Pausing for 45 seconds to ensure youtube makes a new stream
-sleep 45
+echo Pausing for 20 seconds to ensure a new stream is created by service provider
+sleep 20
+# Youtube use 60 seconds
+# Twitch can be less
 
 # RUN FFMPEG
 ffmpeg \
-	-ar 22050 -ac 2 -acodec pcm_s16le \
+	-nostdin \
+	-loglevel error -stats \
 	-f s16le -ac 2 -i /dev/zero \
-	-f v4l2 -s 1280x720 -r 10 -i "$SOURCE" \
+	-f v4l2 -input_format yuyv422 -s 800x600 -i "$SOURCE" \
 	-vf "drawtext=fontfile=FreeSerif.ttf:fontcolor=white@0.8:x=10:y=10:text='%{localtime}:fontsize=24'[out]" \
-	-codec:v h264 -r 1 -g 4 -b:v 3500k -bufsize 2500k \
-	-codec:a aac -ac 2 -ar 22050 -ab 64k \
+	-codec:v h264 -b:v 3500 -maxrate 5000 -bufsize 2500 \
+	-tune zerolatency -preset ultrafast -qp 18 -g 25 \
+	-codec:a aac -shortest -ac 2 -ar 22050 -ab 64k \
 	-f flv "$RTMP_URL/$RTMP_KEY" \
 	& 
 pid=$!
@@ -98,14 +125,17 @@ echo PID: "$((pid))"
 echo =====
 
 # Sleep until next quarter day (6 hours or less if started as odd time)
+sleep 15 # wait from stream to start before running logical sleep
 sleep_during_stream
 
 echo =====
 echo Ending Live Stream
-echo Time: "$((now))"
+echo Time: "$(date +'%F %r')"
 echo -----
 echo killing process..
 kill -TERM $pid
 sleep 8
 echo ..done!
 echo =====
+
+exit 0
