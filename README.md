@@ -7,6 +7,10 @@ A dockerized way of streaming to youtube from a raspberry pi
 ### To Send to docker.io
 `docker push tcrokicki/streamberry:1.0.0`
 
+### Set git tag after pushing changes
+git tag -a vX.X.X -m "streamberry-version-X.X.X"
+git push origin vX.X.X
+
 ### To Run
 `docker run --device=/dev/video0 --env RTMP_LINK='rtmp://a.rtmp.youtube.com/live2' --env RTMP_KEY='xxxxx' --env CAMERA_LOCATION='/dev/video0' tcrokicki/streamberry:1.0.0`
 
