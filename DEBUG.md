@@ -2,9 +2,9 @@
 
 ### Run locally
 Youtube
-`~/Desktop/working/streamberry/capture.sh rtmp://a.rtmp.youtube.com/live2 xxxx-xxxx /dev/video-cam`
+`~/Desktop/server/streamberry/runner.sh rtmp://a.rtmp.youtube.com/live2 xxxx-xxxx /dev/video-cam`
 Twitch
-`~/Desktop/working/streamberry/capture.sh rtmp://iad05.contribute.live-video.net/app XXXXXX /dev/video-cam`
+`~/Desktop/server/streamberry/runner.sh rtmp://iad05.contribute.live-video.net/app XXXXXX /dev/video-cam`
 
 ### See System Activity
 `sudo apt-get install htop`
